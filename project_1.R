@@ -49,5 +49,34 @@ aggr_plot <- aggr(data, col=c('navyblue','red'),
                   numbers=TRUE, sortVars=TRUE, labels=names(data), cex.axis=.7, gap=3, 
                   ylab=c("Histogram of missing data","Pattern")) #Missing values in calories -> 33.3%
 
+#complete case (CC) analysis
+#the theory: 
+#also called listwise deletion, the NA are deleted
+#derive estimates from the complete/filled ones
+#basically just analyse the ones that are completed
 
+#fitting regression mode for CC
+data <- data.frame(muscle.incomplete)
+View(data)
+data.omit <- lm(calories~weight+calhour, data=data)
+summary(data.omit)
+#can be seen 8 observations deleted due to missingness
+#R deletes all incomplete observations by default
+#intercept is not significant IDK why
+data.omit2 <- lm(calories~calhour, data=data)
+summary(data.omit2)
+#if we omit weight, the intercept became significant 
+
+#making correlation with complete case 
+data_cc <- data[complete.cases(data),]
+View(data_cc)
+weight <- data_cc$weight
+calhour <- data_cc$calhour
+calories <- data_cc$calories
+shapiro.test(weight)
+shapiro.test(calhour)
+shapiro.test(calories) #only calories normality is accepted
+combine<- data.frame(weight, calhour, calories)
+#cor with spearman when not normal
+cor(combine, method="spearman")
 
